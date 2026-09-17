@@ -17,7 +17,7 @@ const SEEDS: Record<string, string[]> = {
   ],
 };
 
-async function main() {
+async function main() {/*
   for (const [username, titles] of Object.entries(SEEDS)) {
     const user = await prisma.user.upsert({
       where: { username },
@@ -36,7 +36,7 @@ async function main() {
       await prisma.todoEvent.create({ data: { todoId: todo.id, type: "CREATED" } });
     }
     console.log(`seed: created ${titles.length} todos for @${username}`);
-  }
+  }*/
 }
 
 main()

@@ -28,7 +28,7 @@ async function handle(msg: JobMessage): Promise<void> {
         return;
       }
 
-      const todo = await prisma.todo.findUnique({
+      /*const todo = await prisma.todo.findUnique({
         where: { id: todoId },
         select: { userId: true, title: true },
       });
@@ -40,7 +40,7 @@ async function handle(msg: JobMessage): Promise<void> {
       await prisma.$transaction(async (tx) => {
         await tx.todoEvent.create({ data: { todoId, type: "THUMBNAIL_STARTED" } });
         await tx.$executeRaw`SELECT pg_notify('events', ${stagePayload(todo.userId, "THUMBNAIL_STARTED", { todoId, title: todo.title })})`;
-      });
+      });*/
 
       const original = await downloadAttachment(blobName);
       if (!original) {
@@ -55,11 +55,11 @@ async function handle(msg: JobMessage): Promise<void> {
 
       const thumbName = await uploadAttachment(todoId, "thumb.webp", "image/webp", thumb.buffer as ArrayBuffer);
 
-      await prisma.$transaction(async (tx) => {
+      await prisma.$transaction(async (tx) => {/*
         await tx.todo.update({ where: { id: todoId }, data: { thumbnailName: thumbName } });
         await tx.todoEvent.create({ data: { todoId, type: "THUMBNAIL_READY" } });
         await tx.$executeRaw`SELECT pg_notify('events', ${stagePayload(todo.userId, "THUMBNAIL_READY", { todoId, title: todo.title })})`;
-      });
+      */});
 
       log.info({ todoId, thumbName, bytes: thumb.length }, "thumbnail generated");
       return;

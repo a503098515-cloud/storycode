@@ -19,7 +19,7 @@ export const dynamic = "force-dynamic";
 type Ctx = { params: Promise<{ id: string }> };
 
 function ownedTodo(id: string, userId: string) {
-  return prisma.todo.findFirst({ where: { id, userId } });
+ /* return prisma.todo.findFirst({ where: { id, userId } });*/
 }
 
 export async function POST(req: Request, ctx: Ctx) {
@@ -30,9 +30,9 @@ export async function POST(req: Request, ctx: Ctx) {
   const { id } = await ctx.params;
 
   const todo = await ownedTodo(id, userId);
-  if (!todo) {
+ /* if (!todo) {
     return Response.json({ error: { code: "NOT_FOUND", message: "No such todo" } }, { status: 404 });
-  }
+  }*/
 
   if (!(await storageAvailable())) {
     return Response.json(
@@ -68,7 +68,7 @@ export async function POST(req: Request, ctx: Ctx) {
       { status: 415 }
     );
   }
-
+/*
   const blobName = await uploadAttachment(todo.id, file.name, file.type, await file.arrayBuffer());
   await prisma.$transaction(async (tx) => {
     await tx.todo.update({
@@ -109,5 +109,5 @@ export async function GET(_req: Request, ctx: Ctx) {
       "Content-Disposition": `inline; filename="${todo.attachmentName.split("/").pop()}"`,
       "X-Content-Type-Options": "nosniff",
     },
-  });
+  });*/
 }

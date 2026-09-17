@@ -49,7 +49,7 @@ export async function GET(req: Request) {
       // Live events first, then replay — overlap beats a gap.
       unsubscribe = await onStage(userId, send);
 
-      const recent = await prisma.todoEvent.findMany({
+    /*  const recent = await prisma.todoEvent.findMany({
         where: {
           todo: { userId },
           type: { in: [...PIPELINE_TYPES] },
@@ -67,7 +67,7 @@ export async function GET(req: Request) {
           title: e.todo.title,
           replay: true,
         });
-      }
+      }*/
 
       heartbeat = setInterval(() => controller.enqueue(encoder.encode(`: ping\n\n`)), HEARTBEAT_MS);
       lifetime = setTimeout(close, MAX_LIFETIME_MS);

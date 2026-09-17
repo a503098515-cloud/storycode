@@ -14,7 +14,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
   }
   const { id } = await ctx.params;
 
-  const todo = await prisma.todo.findFirst({ where: { id, userId } });
+  /*const todo = await prisma.todo.findFirst({ where: { id, userId } });
   if (!todo?.thumbnailName) {
     return Response.json(
       { error: { code: "NOT_FOUND", message: "No thumbnail (yet — is the worker running?)" } },
@@ -29,5 +29,5 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
 
   return new Response(new Uint8Array(found.data), {
     headers: { "Content-Type": found.contentType, "Cache-Control": "private, max-age=60" },
-  });
+  });*/
 }
