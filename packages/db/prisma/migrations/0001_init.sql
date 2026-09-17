@@ -1,50 +1,56 @@
--- 0001_init — the complete schema, day one.
--- Matches prisma/schema.prisma exactly (Prisma DDL conventions).
--- Regenerate after schema changes with:
---   npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script
+-- CreateSchema
+CREATE SCHEMA IF NOT EXISTS "public";
 
--- Enums
-CREATE TYPE "TodoEventType" AS ENUM ('CREATED', 'COMPLETED', 'REOPENED', 'THUMBNAIL_QUEUED', 'THUMBNAIL_STARTED', 'THUMBNAIL_READY');
-
--- Tables
+-- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
-    "username" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "currentLevelId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
-CREATE TABLE "Todo" (
+-- CreateTable
+CREATE TABLE "Level" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "storyText" TEXT NOT NULL,
+    "codingChallenge" TEXT NOT NULL,
+    "order" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Level_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Submission" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
-    "title" TEXT NOT NULL,
-    "done" BOOLEAN NOT NULL DEFAULT false,
-    "attachmentName" TEXT,
-    "thumbnailName" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Todo_pkey" PRIMARY KEY ("id")
-);
-
-CREATE TABLE "TodoEvent" (
-    "id" TEXT NOT NULL,
-    "todoId" TEXT NOT NULL,
-    "type" "TodoEventType" NOT NULL,
+    "levelId" TEXT NOT NULL,
+    "codeSubmitted" TEXT NOT NULL,
+    "isPassed" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "TodoEvent_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Submission_pkey" PRIMARY KEY ("id")
 );
 
--- Indexes
-CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
-CREATE INDEX "Todo_userId_done_idx" ON "Todo"("userId", "done");
-CREATE INDEX "Todo_userId_createdAt_idx" ON "Todo"("userId", "createdAt");
-CREATE INDEX "TodoEvent_todoId_createdAt_idx" ON "TodoEvent"("todoId", "createdAt");
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
--- Foreign keys
-ALTER TABLE "Todo" ADD CONSTRAINT "Todo_userId_fkey"
-    FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "TodoEvent" ADD CONSTRAINT "TodoEvent_todoId_fkey"
-    FOREIGN KEY ("todoId") REFERENCES "Todo"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+-- CreateIndex
+CREATE UNIQUE INDEX "Level_order_key" ON "Level"("order");
+
+-- CreateIndex
+CREATE INDEX "Submission_userId_idx" ON "Submission"("userId");
+
+-- CreateIndex
+CREATE INDEX "Submission_levelId_idx" ON "Submission"("levelId");
+
+-- AddForeignKey
+ALTER TABLE "Submission" ADD CONSTRAINT "Submission_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Submission" ADD CONSTRAINT "Submission_levelId_fkey" FOREIGN KEY ("levelId") REFERENCES "Level"("id") ON DELETE CASCADE ON UPDATE CASCADE;
