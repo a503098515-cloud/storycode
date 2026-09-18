@@ -37,5 +37,10 @@ export async function POST(req: Request) {
   const user = await findOrCreateUser(parsed.data.username);
   await startSession(user.id);
 
-  return Response.json({ user: { id: user.id, username: user.username } });
+  return Response.json({
+  user: {
+    id: user.id,
+    name: user.name,
+  },
+});
 }
