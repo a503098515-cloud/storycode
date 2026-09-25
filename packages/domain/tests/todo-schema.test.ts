@@ -2,7 +2,7 @@
 // the server change together — that's why they live in one shared package.
 import { describe, it, expect } from "vitest";
 import { CreateTodo, ToggleTodo } from "../src/schemas/todo";
-import { Username } from "../src/schemas/user";
+import { Email } from "../src/schemas/user";
 
 describe("CreateTodo schema", () => {
   it("accepts a valid todo", () => {
@@ -27,18 +27,16 @@ describe("ToggleTodo schema", () => {
   });
 });
 
-describe("Username schema", () => {
+describe("Email schema", () => {
   it("normalizes case and whitespace", () => {
-    const r = Username.safeParse("  Ada ");
+    const r = Email.safeParse("  Ada@example.com ");
     expect(r.success).toBe(true);
-    if (r.success) expect(r.data).toBe("ada");
+    if (r.success) expect(r.data).toBe("ada@example.com");
   });
 
-  it("rejects too-short, too-long, and hostile names", () => {
-    expect(Username.safeParse("ab").success).toBe(false);
-    expect(Username.safeParse("a".repeat(31)).success).toBe(false);
-    expect(Username.safeParse("no spaces").success).toBe(false);
-    expect(Username.safeParse("-starts-wrong").success).toBe(false);
-    expect(Username.safeParse("<script>").success).toBe(false);
+  it("rejects malformed addresses", () => {
+    expect(Email.safeParse("not-an-email").success).toBe(false);
+    expect(Email.safeParse("ada@").success).toBe(false);
+    expect(Email.safeParse("ada example.com").success).toBe(false);
   });
 });

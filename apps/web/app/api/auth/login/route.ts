@@ -1,4 +1,4 @@
-// Sign-in: a username is an account. Validates, finds-or-creates the user,
+// Sign-in: an email is an account. Validates, finds-or-creates the user,
 // and starts the (unsigned — see packages/auth) session. No password: this
 // route does identity, not authentication, and refuses to run in production
 // builds for exactly that reason.
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const user = await findOrCreateUser(parsed.data.username);
+  const user = await findOrCreateUser(parsed.data.email);
   await startSession(user.id);
 
   return Response.json({

@@ -1,42 +1,33 @@
-// Seeds two demo users and starter todos. Two users on purpose: sign in as
-// each and see different data — that's the scoping rule made visible.
-// Safe to re-run: users upsert by username, todos only created when absent.
+// Seeds demo users and starter levels. Safe to re-run through unique keys.
 // Run via: pnpm db:seed
 
 import { prisma } from "@project/db";
 
-const SEEDS: Record<string, string[]> = {
-  ada: [
-    "Read the schema with AI — then verify one claim by running code",
-    "Attach an image to a todo and watch the pipeline (pnpm worker)",
-    "Open your first PR (change this seed data!)",
-  ],
-  grace: [
-    "Sign in as ada — notice you can't see her todos from here",
-    "Trace the /api/todos POST in the network tab",
-  ],
-};
+const USERS = [
+  { email: "ada@example.com", name: "Ada" },
+  { email: "grace@example.com", name: "Grace" },
+];
 
-async function main() {/*
-  for (const [username, titles] of Object.entries(SEEDS)) {
-    const user = await prisma.user.upsert({
-      where: { username },
+const LEVELS = [
+  { title: "The First Function", storyText: "A small problem opens the story.", codingChallenge: "Write a function that returns 1.", order: 1 },
+  { title: "The Next Step", storyText: "The path continues with a new constraint.", codingChallenge: "Explain your approach in code.", order: 2 },
+];
+
+async function main() {
+  for (const user of USERS) {
+    const savedUser = await prisma.user.upsert({
+      where: { email: user.email },
       update: {},
-      create: { username },
+      create: user,
     });
 
-    const existing = await prisma.todo.count({ where: { userId: user.id } });
-    if (existing > 0) {
-      console.log(`seed: @${username} already has ${existing} todos, leaving them alone`);
-      continue;
-    }
+    console.log(`seed: ensured ${savedUser.email}`);
+  }
 
-    for (const title of titles) {
-      const todo = await prisma.todo.create({ data: { userId: user.id, title } });
-      await prisma.todoEvent.create({ data: { todoId: todo.id, type: "CREATED" } });
-    }
-    console.log(`seed: created ${titles.length} todos for @${username}`);
-  }*/
+  for (const level of LEVELS) {
+    await prisma.level.upsert({ where: { order: level.order }, update: level, create: level });
+  }
+  console.log(`seed: ensured ${LEVELS.length} levels`);
 }
 
 main()

@@ -1,4 +1,4 @@
-// The sign-in page. A username is an account — no password, and the page
+// The sign-in page. An email is an account — no password, and the page
 // says so out loud. Client Component: owns the form state, calls the API.
 "use client";
 
@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -18,7 +18,7 @@ export default function LoginPage() {
     const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username }),
+      body: JSON.stringify({ email }),
     });
     setBusy(false);
     if (!res.ok) {
@@ -35,22 +35,22 @@ export default function LoginPage() {
       <header>
         <h1 className="text-2xl font-bold">Sign in</h1>
         <p className="text-sm text-neutral-500">
-          Pick a username. If it doesn&rsquo;t exist yet, it&rsquo;s yours.
+          Enter an email. If it doesn&rsquo;t exist yet, it&rsquo;s yours.
         </p>
       </header>
 
       <form onSubmit={submit} className="flex gap-2">
         <input
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="username"
-          aria-label="Username"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="you@example.com"
+          aria-label="Email"
           autoFocus
           className="flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-500 focus:outline-none"
         />
         <button
           type="submit"
-          disabled={busy || username.trim().length === 0}
+          disabled={busy || email.trim().length === 0}
           className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
         >
           {busy ? "Signing in…" : "Sign in"}
