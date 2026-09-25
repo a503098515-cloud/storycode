@@ -15,7 +15,7 @@
 |Karthikeya Reddy B      | b-karthikeya-reddy        |bkarthikeyareddy22@gmail.com |
 |JiaRong Kong            | a503098515-cloud          |a503098515@gmail.com         |
 |AJ Thompson                        |sudo-lock-in                           |arthur.james.thompson6@gmail.com                             | 
-|                        |                           |                             |
+|     Osei Kwame Boakye                   |          OseiKBoakye                 |           kboakye092@gmail.com                  |
 
 ### Roles & responsibilities
 
@@ -26,6 +26,8 @@ Karthik: I'll take first-stop ownership of the DB/migrations layer and CI setup 
 Jiarong kong: Integration of Prisma data models, frontend UI components, and API implementation for level submission.
 
 AJ: I will work on the backend/server side and API endpoints for the application. I do not mind working on the database or testing suite as well as I have previous experience.
+
+Osei: I will work on the frontend UI. As much as I havent done any work on the backend before, I will like to take on that role as well. Am available to assist with any other aspects.
 
 **Everyone, every week:** One merged PR, one review given on a teammate's PR, and either at stand-up or an async update posted before it starts.
 
@@ -115,4 +117,4 @@ We wrote this together, we mean it, and we'll revisit it at midterm and update w
 | Karthikeya Reddy B | 9/24/2026 |
 |  jiarong kong      | 9/25/2026 |
 | AJ Thompson                    | 9/25/2026          |
-|                    |           |
+|       Osei Kwame Boakye             |    9/25/2026       |
