@@ -14,17 +14,18 @@
 | ---------------------- | ------------------------- | --------------------------- |
 |Karthikeya Reddy B      | b-karthikeya-reddy        |bkarthikeyareddy22@gmail.com |
 |JiaRong Kong            | a503098515-cloud          |a503098515@gmail.com         |
-|                        |                           |                             |
+|AJ Thompson                        |sudo-lock-in                           |arthur.james.thompson6@gmail.com                             | 
 |                        |                           |                             |
 
 ### Roles & responsibilities
 
-**Rotating roles (who has it this week is posted in the channel):** \***\* \_\*\***
-
 **Standing ownership:** 
+
 Karthik: I'll take first-stop ownership of the DB/migrations layer and CI setup — I built the GitHub Actions pipeline and deployment checks on a past team project, so I'm comfortable owning that surface.
 
 Jiarong kong: Integration of Prisma data models, frontend UI components, and API implementation for level submission.
+
+AJ: I will work on the backend/server side and API endpoints for the application. I do not mind working on the database or testing suite as well as I have previous experience.
 
 **Everyone, every week:** One merged PR, one review given on a teammate's PR, and either at stand-up or an async update posted before it starts.
 
@@ -63,29 +64,29 @@ Jiarong kong: Integration of Prisma data models, frontend UI components, and API
 **Availability notes:** Flexible
 
 **How we decide when we disagree:**
-vote
+Vote
 
-**Definition of done:** \***\*\_\_\_\_\*\***
+**Definition of done:** When we accomplish our goal 
 
 ### Rituals
 
 | Ritual                 | When                      | Shape |
 | ---------------------- | ------------------------- | ----- |
-| Stand-up               | \***\*\_\_\_\_\*\***      |       |
-| Team review (in class) | every session, ~15 min    |       |
-| Async check-in         | \***\*\_\_\_\_\*\***      |       |
-| Retro                  | midterm + before demo day |       |
-| Planning               | \***\*\_\_\_\_\*\***      |       |
+| Stand-up               | weekly      | virtual meeting       |
+| Team review (in class) | every session, ~15 min    | in-person meeting       |
+| Async check-in         | weekly      | messages       |
+| Retro                  | midterm + before demo day | virtual meeting       |
+| Planning               | weekly      |messages       | 
 
-**How we track work:** \***\*\_\_\_\_\*\***
+**How we track work:** Communications through Slack, Discord meetings, and in-class
 
 ## 4 · Code & Review Norms
 
-**Branch & PR flow:** \***\*\_\_\_\_\*\***
+**Branch & PR flow:** Create a new branch for each feature, test it and ensure reliability, create pull request
 
-**What blocks approval:** \***\*\_\_\_\_\*\***
+**What blocks approval:** Broken or unclear code, or unwanted changes
 
-**Review response time:** \***\*\_\_\_\_\*\***
+**Review response time:** 24 hours
 
 **Comment conventions:** nit: for style/preference, q: for a genuine question, blocker: for something that has to change before merge.
 
@@ -101,9 +102,9 @@ vote
 
 Stuck protocol (course default): 15 minutes stuck → post in the team thread → still stuck at stand-up → TA → office hours.
 
-**If someone can't deliver on time:** \***\*\_\_\_\_\*\***
+**If someone can't deliver on time:** Help them to ensure we get our work done, but also remind them of the expectations for the team
 
-**If we have a conflict:** \***\*\_\_\_\_\*\***
+**If we have a conflict:** We discuss it or have a vote if necessary
 
 ## 7 · Commitment
 
@@ -113,5 +114,5 @@ We wrote this together, we mean it, and we'll revisit it at midterm and update w
 | ------------------ | --------- |
 | Karthikeya Reddy B | 9/24/2026 |
 |  jiarong kong      | 9/25/2026 |
-|                    |           |
+| AJ Thompson                    | 9/25/2026          |
 |                    |           |
