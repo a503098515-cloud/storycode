@@ -13,11 +13,8 @@
 | Name                   | GitH                      | Email                       |
 | ---------------------- | ------------------------- | --------------------------- |
 |Karthikeya Reddy B      | b-karthikeya-reddy        |bkarthikeyareddy22@gmail.com |
-
 |JiaRong Kong            | a503098515-cloud          |a503098515@gmail.com         |
-
 |                        |                           |                             |
-
 |                        |                           |                             |
 
 ### Roles & responsibilities
