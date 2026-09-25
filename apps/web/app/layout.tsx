@@ -4,9 +4,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Todos — Starter Example",
-  description:
-    "example/todo — username identity, todos, attachments, and live notifications on the starter skeleton.",
+  title: "StoryCode",
+  description: "Story-based coding challenges.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

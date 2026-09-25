@@ -1,15 +1,14 @@
-// Database queries for users. Sign-in is find-or-create: a username IS an
-// account. The unique index on username makes the upsert race-safe.
+// Database queries for users. Sign-in is find-or-create by unique email.
 import { prisma } from "@project/db";
 
 export function getUser(id: string) {
   return prisma.user.findUnique({ where: { id } });
 }
 
-export function findOrCreateUser(username: string) {
+export function findOrCreateUser(email: string, name = email.split("@")[0] ?? email) {
   return prisma.user.upsert({
-    where: { username },
+    where: { email },
     update: {},
-    create: { username },
+    create: { email, name },
   });
 }

@@ -21,7 +21,9 @@ describe("prisma client (PGlite door)", () => {
   });
 
   it("applied the migrations on boot", async () => {
-    // If 0001_init didn't run, this throws: no Todo table.
-    expect(await prisma.todo.count()).toBe(0);
+    // If 0001_init did not run, this throws: no User table.
+    expect(await prisma.user.count()).toBe(0);
+    expect(await prisma.level.count()).toBe(0);
+    expect(await prisma.submission.count()).toBe(0);
   });
 });

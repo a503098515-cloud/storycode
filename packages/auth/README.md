@@ -2,7 +2,7 @@
 
 Identity without authentication.
 
-Sign-in is a username — no password, no verification. `/login` finds or
+Sign-in is an email — no password, no verification. `/login` finds or
 creates the `User` row and puts its id in an **unsigned, httpOnly cookie**.
 `currentUserId()` reads it back. That's the entire mechanism.
 
