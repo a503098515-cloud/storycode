@@ -4,7 +4,7 @@
 | --- | --- | --- | --- |
 | Your name here | 1. Identity and profile  | Session, current user, and profile reads or updates | `POST /api/auth/login`<br>`POST /api/auth/logout`<br>`GET /api/me` |
 | Your name here | 2. Level catalog | Read-only story and coding challenge content | `GET /api/levels`<br>`GET /api/levels/:levelId` |
-| Your name here | 3. Submissions | Create and list the signed-in user's code submissions | `POST /api/submissions`<br>`GET /api/submissions`<br>`GET /api/submissions/:submissionId` |
+| jiarong kong | 3. Submissions | Create and list the signed-in user's code submissions | `POST /api/submissions`<br>`GET /api/submissions`<br>`GET /api/submissions/:submissionId` |
 | Your name here | 4. Progression and integration | Current level, completion rules, cross-entity behavior, and API contract tests | `GET /api/progress`<br>`PATCH /api/progress/current-level` |
 
 ## Shared Boundaries
