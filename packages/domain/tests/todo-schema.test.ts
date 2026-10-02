@@ -40,3 +40,4 @@ describe("Email schema", () => {
     expect(Email.safeParse("ada example.com").success).toBe(false);
   });
 });
+
