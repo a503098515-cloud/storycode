@@ -4,5 +4,6 @@
 export { Email, SignIn, type SignInInput } from "./schemas/user";
 export * from "./queries/levels";
 export { getUser, findOrCreateUser } from "./queries/users";
+export { LevelIdParam } from "./schemas/level";
 export * from "./schemas/submission";
 export * from "./queries/submission"
