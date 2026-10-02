@@ -3,3 +3,4 @@
 export { Email, SignIn, type SignInInput } from "./schemas/user";
 export { listLevels, getLevel, listSubmissions, createSubmission } from "./queries/levels";
 export { getUser, findOrCreateUser } from "./queries/users";
+export { LevelIdParam } from "./schemas/level";
