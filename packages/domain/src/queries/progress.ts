@@ -8,10 +8,19 @@ export function getProgress(userId: string) {
   });
 }
 
+
 export function updateProgress(userId: string, input: UpdateProgressInput) {
-  return prisma.user.update({
-    where: { id: userId },
-    data: { currentLevelId: input.currentLevelId },
-    select: { currentLevelId: true },
+  return prisma.level.findUnique({ where: { id: input.currentLevelId } }).then((level) => {
+    if (!level) {
+      const error = new Error("Level not found");
+      Object.assign(error, { code: "LEVEL_NOT_FOUND" });
+      throw error;
+    }
+
+    return prisma.user.update({
+      where: { id: userId },
+      data: { currentLevelId: input.currentLevelId },
+      select: { currentLevelId: true },
+    });
   });
 }
