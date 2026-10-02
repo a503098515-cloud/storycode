@@ -38,6 +38,8 @@ Every route handler and Server Action, in order:
 - **Foreign resources return 404, not 403** — existence is not confirmed to
   non-owners.
 - Raw errors and stack traces never reach a client.
+- `POST /api/progress` persists a signed-in user's existing `currentLevelId`;
+  unknown level IDs return 404 and never update the user.
 
 ## Verify
 

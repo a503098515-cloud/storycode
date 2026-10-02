@@ -24,7 +24,11 @@ describe("level and submission domain (PGlite door)", () => {
     const level = await db.prisma.level.create({
       data: { title: "Intro", storyText: "Begin.", codingChallenge: "Print 1", order: 1 },
     });
-    const created = await domain.createSubmission(owner.id, level.id, "print(1)");
+    const created = await domain.createSubmission(owner.id, {
+      levelId: level.id,
+      codeSubmitted: "print(1)",
+      isPassed: false,
+    });
     expect(created.userId).toBe(owner.id);
     expect((await domain.listSubmissions(stranger.id))).toHaveLength(0);
   });
