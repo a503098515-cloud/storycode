@@ -4,6 +4,7 @@
 import { currentUserId } from "@project/auth";
 import { getUser, listLevels, listSubmissions } from "@project/domain";
 import { SignOutButton } from "@/components/SignOutButton";
+import { ProgressForm } from "@/components/ProgressForm";
 import { SubmissionForm } from "@/components/SubmissionForm";
 import { redirect } from "next/navigation";
 
@@ -36,19 +37,20 @@ export default async function Home() {
           No levels are available yet. Add starter levels with <code className="rounded bg-neutral-100 px-1">pnpm db:seed</code>.
         </p>
       ) : (
-        <ul className="divide-y divide-neutral-200 rounded-lg border border-neutral-200">
-          {levels.map((level) => (
-             <li key={level.id} className="space-y-2 p-4">
-              <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">Level {level.order}</p>
-              <h2 className="font-medium">{level.title}</h2>
-              <p className="text-sm text-neutral-600">{level.storyText}</p>
-              <p className="text-sm text-neutral-500">{level.codingChallenge}</p>
-
-              {/* Client Component for Week 5 Submission Form */}
-              <SubmissionForm levelId={level.id} />
-            </li>
-          ))}
-        </ul>
+        <>
+          <ProgressForm levels={levels} currentLevelId={user.currentLevelId} />
+          <ul className="divide-y divide-neutral-200 rounded-lg border border-neutral-200">
+            {levels.map((level) => (
+              <li key={level.id} className="space-y-2 p-4">
+                <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">Level {level.order}</p>
+                <h2 className="font-medium">{level.title}</h2>
+                <p className="text-sm text-neutral-600">{level.storyText}</p>
+                <p className="text-sm text-neutral-500">{level.codingChallenge}</p>
+                <SubmissionForm levelId={level.id} />
+              </li>
+            ))}
+          </ul>
+        </>
       )}
     </main>
   );
