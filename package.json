@@ -5,7 +5,7 @@
   "type": "module",
   "packageManager": "pnpm@11.17.0",
   "scripts": {
-    "dev": "concurrently ... \"turbo run dev --parallel --filter '!@project/migrate'\"",
+    "dev": "turbo run dev --filter \"!@project/migrate\"",
     "build": "turbo run build",
     "start": "pnpm --filter @project/web start",
     "typecheck": "turbo run typecheck",
@@ -13,13 +13,13 @@
     "test:integration": "vitest run",
     "test:watch": "vitest",
     "db:migrate": "pnpm --filter @project/migrate dev",
-    "db:reset": "rm -rf .pgdata && echo \"Restart pnpm dev (db re-initializes + migrations re-apply)\"",
+    "db:reset": "pnpm dlx rimraf .pgdata && echo \"Restart pnpm dev (db re-initializes + migrations re-apply)\"",
     "db:dev": "pnpm --filter @project/db-server dev",
     "prisma:generate": "pnpm --filter @project/db generate",
     "dev:web": "pnpm --filter @project/web dev",
     "azurite": "azurite --silent --skipApiVersionCheck --location .azurite",
     "worker": "pnpm --filter @project/worker dev",
-    "clean": "turbo run clean && rm -rf node_modules"
+    "clean": "turbo run clean && pnpm dlx rimraf node_modules"
   },
   "dependencies": {},
   "devDependencies": {
