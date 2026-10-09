@@ -46,3 +46,17 @@ Users need to submit their code solutions for coding levels and view their submi
 ## Out of scope
 - Code execution and evaluation logic (handled by isolated submission runners outside this API).
 - Pagination and query-string filtering on submission lists.
+
+## UI states
+
+```mermaid
+stateDiagram-v2
+  [*] --> empty: Initial state
+  empty --> ready: User inputs code
+  ready --> empty: Clear code
+  ready --> submitting: Click submit button
+  submitting --> success: API 201 response
+  success --> empty: Reset form state
+  submitting --> error: 400 validation error or network failure
+  error --> submitting: Retry submit button
+  error --> ready: Edit code content
