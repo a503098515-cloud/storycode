@@ -1,4 +1,4 @@
-"use client";
+
 
 import { currentUserId } from "@project/auth"
 import { getUser } from "@project/domain"
