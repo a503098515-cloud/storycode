@@ -1,5 +1,5 @@
 import { currentUserId } from "@project/auth";
-import { UpdateProgress, updateProgress } from "@project/domain";
+import { UpdateProgress, getProgress, updateProgress } from "@project/domain";
 
 type UserIdResolver = () => Promise<string | null>;
 
@@ -11,6 +11,16 @@ export function createProgressHandler(resolveUserId: UserIdResolver = currentUse
         { error: { code: "UNAUTHENTICATED", message: "Sign in first" } },
         { status: 401 }
       );
+    }
+
+    if (req.method === "GET") {
+      const progress = await getProgress(userId);
+      return progress
+        ? Response.json({ progress })
+        : Response.json(
+            { error: { code: "NOT_FOUND", message: "User progress not found" } },
+            { status: 404 }
+          );
     }
 
     let body: unknown;
@@ -33,7 +43,7 @@ export function createProgressHandler(resolveUserId: UserIdResolver = currentUse
 
     try {
       const progress = await updateProgress(userId, parsed.data);
-      return Response.json({ progress });
+      return Response.json({ progress }, { status: 201 });
     } catch (error) {
       const code = error instanceof Error && "code" in error ? error.code : undefined;
 
