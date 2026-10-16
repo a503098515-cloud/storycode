@@ -4,6 +4,7 @@
 import { currentUserId } from "@project/auth";
 import { getUser, listLevels, listSubmissions } from "@project/domain";
 import { SignOutButton } from "@/components/SignOutButton";
+import Link from "next/link";
 import { ProgressForm } from "@/components/ProgressForm";
 import { SubmissionForm } from "@/components/SubmissionForm";
 import { redirect } from "next/navigation";
@@ -29,7 +30,15 @@ export default async function Home() {
             <code className="rounded bg-neutral-100 px-1">{user.email}</code>
           </p>
         </div>
-        <SignOutButton />
+        <nav className="flex items-center gap-3">
+          <Link
+            href="/profile"
+            className="rounded border border-neutral-300 px-2 py-0.5 text-xs text-neutral-600 hover:bg-neutral-50"
+          >
+            Profile
+          </Link>
+          <SignOutButton />
+        </nav>
       </header>
 
       {levels.length === 0 ? (
