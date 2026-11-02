@@ -1,21 +1,15 @@
-// Sign-in: an email is an account. Validates, finds-or-creates the user,
-// and starts the (unsigned — see packages/auth) session. No password: this
-// route does identity, not authentication, and refuses to run in production
-// builds for exactly that reason.
+// Sign-in by username/password; the first use of a username creates its account.
 
-import { startSession } from "@project/auth";
-import { SignIn, findOrCreateUser } from "@project/domain";
+import { hashPassword, startSession, verifyPassword } from "@project/auth";
+import {
+  SignIn,
+  createCredentialUser,
+  getUserByUsername,
+} from "@project/domain";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
-  if (process.env.NODE_ENV === "production" && !process.env.ALLOW_DEV_IDENTITY) {
-    return Response.json(
-      { error: { code: "AUTH_DISABLED", message: "Passwordless sign-in is disabled in production." } },
-      { status: 403 }
-    );
-  }
-
   let body: unknown;
   try {
     body = await req.json();
@@ -34,13 +28,53 @@ export async function POST(req: Request) {
     );
   }
 
-  const user = await findOrCreateUser(parsed.data.email);
+  const { username, password } = parsed.data;
+  let user = await getUserByUsername(username);
+  if (user) {
+    if (!user.passwordHash) {
+      await hashPassword(password);
+      return Response.json(
+        { error: { code: "INVALID_CREDENTIALS", message: "Username or password is incorrect" } },
+        { status: 401 }
+      );
+    }
+    if (!(await verifyPassword(password, user.passwordHash))) {
+      return Response.json(
+        { error: { code: "INVALID_CREDENTIALS", message: "Username or password is incorrect" } },
+        { status: 401 }
+      );
+    }
+  } else {
+    const passwordHash = await hashPassword(password);
+    try {
+      user = await createCredentialUser(username, passwordHash);
+    } catch (error) {
+      if (
+        typeof error !== "object" ||
+        error === null ||
+        !("code" in error) ||
+        error.code !== "P2002"
+      ) {
+        throw error;
+      }
+
+      user = await getUserByUsername(username);
+      if (!user?.passwordHash || !(await verifyPassword(password, user.passwordHash))) {
+        return Response.json(
+          { error: { code: "INVALID_CREDENTIALS", message: "Username or password is incorrect" } },
+          { status: 401 }
+        );
+      }
+    }
+  }
+
   await startSession(user.id);
 
   return Response.json({
-  user: {
-    id: user.id,
-    name: user.name,
-  },
-});
+    user: {
+      id: user.id,
+      username: user.username,
+      name: user.name,
+    },
+  });
 }

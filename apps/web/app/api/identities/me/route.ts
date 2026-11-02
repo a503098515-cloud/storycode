@@ -25,6 +25,7 @@ export async function GET() {
     user: {
       id: user.id,
       name: user.name,
+      username: user.username,
       email: user.email,
       currentLevelId: user.currentLevelId,
     },

@@ -1,34 +1,61 @@
-// Identity without authentication: the session cookie stores the user id,
-// plain and unsigned. Anyone can edit the cookie and become anyone — that is
-// the point: this example demonstrates *identity* (who is this request for?)
-// while *authentication* (prove it) stays a visible, later door. When real
-// auth arrives it replaces the inside of this package and nothing else —
-// every caller keeps calling currentUserId().
-
+import { createHash, randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
+import { prisma } from "@project/db";
 
 export const SESSION_COOKIE = "session";
+const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30;
 
-// Null means "not signed in" — pages redirect to /login, API routes 401.
-export async function currentUserId(): Promise<string | null> {
-  const jar = await cookies();
-  return jar.get(SESSION_COOKIE)?.value ?? null;
+function hashToken(token: string): string {
+  return createHash("sha256").update(token).digest("hex");
 }
 
-// Cookie writes are only allowed in Route Handlers / Server Actions
-// (a Next.js rule). httpOnly keeps page scripts from reading the cookie —
-// the one real security property it has. Signing it is real auth's job.
+export async function currentUserId(): Promise<string | null> {
+  const jar = await cookies();
+  const token = jar.get(SESSION_COOKIE)?.value;
+  if (!token || !/^[a-f0-9]{64}$/.test(token)) return null;
+
+  const session = await prisma.authSession.findFirst({
+    where: { tokenHash: hashToken(token), expiresAt: { gt: new Date() } },
+    select: { userId: true },
+  });
+  return session?.userId ?? null;
+}
+
 export async function startSession(userId: string): Promise<void> {
   const jar = await cookies();
-  jar.set(SESSION_COOKIE, userId, {
+  const previousToken = jar.get(SESSION_COOKIE)?.value;
+  const token = randomBytes(32).toString("hex");
+
+  await prisma.authSession.create({
+    data: {
+      tokenHash: hashToken(token),
+      userId,
+      expiresAt: new Date(Date.now() + SESSION_TTL_SECONDS * 1000),
+    },
+  });
+
+  jar.set(SESSION_COOKIE, token, {
     httpOnly: true,
     sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: 60 * 60 * 24 * 30, // 30 days
+    maxAge: SESSION_TTL_SECONDS,
   });
+
+  if (previousToken && /^[a-f0-9]{64}$/.test(previousToken)) {
+    await prisma.authSession.deleteMany({
+      where: { tokenHash: hashToken(previousToken) },
+    });
+  }
 }
 
 export async function endSession(): Promise<void> {
   const jar = await cookies();
+  const token = jar.get(SESSION_COOKIE)?.value;
+  if (token && /^[a-f0-9]{64}$/.test(token)) {
+    await prisma.authSession.deleteMany({
+      where: { tokenHash: hashToken(token) },
+    });
+  }
   jar.delete(SESSION_COOKIE);
 }

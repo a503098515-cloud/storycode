@@ -20,7 +20,7 @@ let currentUserId: string | null = null;
 describe("POST /api/progress", () => {
   it("persists the current level for the signed-in user", async () => {
     const user = await db.prisma.user.create({
-      data: { name: "Progress User", email: "progress-happy@example.com" },
+      data: { name: "Progress User", username: "progress-happy", email: "progress-happy@example.com" },
     });
     const level = await db.prisma.level.create({
       data: { title: "Intro", storyText: "Begin.", codingChallenge: "Print 1", order: 1 },
@@ -44,7 +44,7 @@ describe("POST /api/progress", () => {
 
   it("rejects an unknown level without changing progress", async () => {
     const user = await db.prisma.user.create({
-      data: { name: "Progress Sad User", email: "progress-sad@example.com" },
+      data: { name: "Progress Sad User", username: "progress-sad", email: "progress-sad@example.com" },
     });
     currentUserId = user.id;
 

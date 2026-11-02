@@ -5,31 +5,28 @@ type: infrastructure
 
 Who the current user is, and how every server entry learns it.
 
-## Today: the dev identity stub
+## Current implementation
 
-`packages/auth/` resolves the current user from the `x-user-id` header, then
-`DEV_USER_ID`, then a fallback — **deliberately naive**, and guarded: it throws
-in production unless `ALLOW_DEV_IDENTITY` is set. This is the auth seam's
-local stand-in (see [seams](seams.md)) and a planted lesson.
+- Users sign in with a case-insensitive username (3–32 letters, digits, or
+  underscores) and a password (8–128 characters).
+- The first sign-in for an unused username creates an account; subsequent
+  sign-ins must match its password. Invalid credentials share one response.
+- Passwords are stored as salted scrypt hashes, never as plain text.
+- Successful sign-in creates a random opaque session token. Only its SHA-256
+  hash is stored in the database; the cookie is `httpOnly`, `sameSite=lax`,
+  secure in production, and expires after 30 days.
+- Every server entry obtains identity through `currentUserId()` in
+  `packages/auth/`. It validates the session against the database; the client
+  never supplies a user id.
+- Email-only legacy users have no password hash and cannot sign in through
+  this flow.
 
-## Target: session-derived identity, only
+## Constraints
 
-- Auth.js v5 + Prisma adapter, database sessions, GitHub OAuth (one provider).
-- Public surface: landing, /login, /api/health, /api/auth/*. Everything else
-  gated; signed-out API calls get 401, pages redirect to /login.
-- Identity comes from the session **only**. The client never supplies a user
-  id — no header, no param, no dev-only bypass: dev signs in like prod.
-- First sign-in creates the user (name/avatar from GitHub).
-
-The swap from stub to sessions is epic work — a `sign-in` ticket in the
-app's feature epic executes it against this contract.
-
-## Constraints & decisions
-
-- One provider (GitHub); more is out of scope.
-- After the swap, the string `x-user-id` appears nowhere in the codebase.
+- No password reset or account recovery flow is provided.
 - Roles/admin, account deletion + export: future work with a privacy doc.
 
 ## Key decisions
 
-- [ADR-0003](../adr/0003-dev-identity-stub.md) — why the stub exists and how it's guarded.
+- [ADR-0003](../adr/0003-dev-identity-stub.md) — the original identity stub.
+- [ADR-0012](../adr/0012-username-password-auth.md) — username/password credentials and database sessions.

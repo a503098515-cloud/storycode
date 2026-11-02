@@ -1,5 +1,3 @@
-// The sign-in page. An email is an account — no password, and the page
-// says so out loud. Client Component: owns the form state, calls the API.
 "use client";
 
 import { useState } from "react";
@@ -7,7 +5,8 @@ import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -15,19 +14,24 @@ export default function LoginPage() {
     e.preventDefault();
     setBusy(true);
     setError(null);
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-    setBusy(false);
-    if (!res.ok) {
-      const data = await res.json().catch(() => null);
-      setError(data?.error?.message ?? "Something went wrong");
-      return;
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        setError(data?.error?.message ?? "Something went wrong");
+        return;
+      }
+      router.push("/");
+      router.refresh();
+    } catch {
+      setError("Unable to reach the server. Please try again.");
+    } finally {
+      setBusy(false);
     }
-    router.push("/");
-    router.refresh();
   }
 
   return (
@@ -35,35 +39,53 @@ export default function LoginPage() {
       <header>
         <h1 className="text-2xl font-bold">Sign in</h1>
         <p className="text-sm text-neutral-500">
-          Enter an email. If it doesn&rsquo;t exist yet, it&rsquo;s yours.
+          Enter your username and password. Your account is created the first time you sign in.
         </p>
       </header>
 
-      <form onSubmit={submit} className="flex gap-2">
-        <input
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
-          aria-label="Email"
-          autoFocus
-          className="flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-500 focus:outline-none"
-        />
+      <form onSubmit={submit} className="flex flex-col gap-4">
+        <div className="space-y-1">
+          <label htmlFor="username" className="block text-sm font-medium">Username</label>
+          <input
+            id="username"
+            name="username"
+            type="text"
+            autoComplete="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            minLength={3}
+            maxLength={32}
+            autoFocus
+            className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-500 focus:outline-none"
+          />
+        </div>
+        <div className="space-y-1">
+          <label htmlFor="password" className="block text-sm font-medium">Password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={8}
+            maxLength={128}
+            className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-500 focus:outline-none"
+          />
+        </div>
         <button
           type="submit"
-          disabled={busy || email.trim().length === 0}
+          disabled={busy || username.trim().length < 3 || password.length < 8}
           className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
         >
           {busy ? "Signing in…" : "Sign in"}
         </button>
       </form>
-      {error && <p className="text-sm text-red-600">{error}</p>}
-
+      {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
       <p className="rounded-lg border border-dashed border-amber-300 bg-amber-50 p-4 text-sm text-amber-800">
-        <strong>No password?</strong> Correct. This is <em>identity</em> without{" "}
-        <em>authentication</em> — the app always knows who a request is for, but
-        nobody has to prove who they are. Anyone can be anyone (try it: sign out,
-        sign in as your neighbor). Real authentication is a later door; when it
-        arrives, only the inside of <code>packages/auth</code> changes.
+        New username? Your account will be created on your first sign-in.
       </p>
     </main>
   );

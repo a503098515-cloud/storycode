@@ -25,7 +25,7 @@ export default async function Home() {
           <h1 className="text-2xl font-bold">StoryCode</h1>
           <p className="text-sm text-neutral-500">
             {submissions.length} submission{submissions.length === 1 ? "" : "s"} · signed in as{" "}
-            <code className="rounded bg-neutral-100 px-1">{user.email}</code>
+            <code className="rounded bg-neutral-100 px-1">{user.username ?? user.email ?? user.name}</code>
           </p>
         </div>
         <nav className="flex items-center gap-3">

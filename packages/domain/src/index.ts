@@ -6,7 +6,12 @@ export { UpdateProgress, type UpdateProgressInput } from "./schemas/progress";
 export { listLevels, getLevel } from "./queries/levels";
 export { getProgress, updateProgress } from "./queries/progress";
 export * from "./queries/levels";
-export { getUser, findOrCreateUser } from "./queries/users";
+export {
+  getUser,
+  getUserByUsername,
+  createCredentialUser,
+  findOrCreateUser,
+} from "./queries/users";
 export { LevelIdParam } from "./schemas/level";
 export * from "./schemas/submission";
 export * from "./queries/submission"
