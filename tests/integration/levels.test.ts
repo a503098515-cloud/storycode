@@ -32,4 +32,34 @@ describe("level and submission domain (PGlite door)", () => {
     expect(created.userId).toBe(owner.id);
     expect((await domain.listSubmissions(stranger.id))).toHaveLength(0);
   });
+
+  it("stores and returns a level's starter code and challenge tests", async () => {
+    const challengeTests = {
+      functionName: "greet",
+      cases: [{ args: ["Ada"], expected: "Hello, Ada!" }],
+    };
+    const created = await db.prisma.level.create({
+      data: {
+        title: "Gate",
+        storyText: "Greet the guard.",
+        codingChallenge: "Write greet(name).",
+        starterCode: "function greet(name) {}\n",
+        challengeTests,
+        order: 100,
+      },
+    });
+
+    const level = await domain.getLevel(created.id);
+    expect(level?.starterCode).toBe("function greet(name) {}\n");
+    expect(domain.ChallengeTests.parse(level?.challengeTests)).toEqual(challengeTests);
+  });
+
+  it("leaves challenge fields null for a level without tests", async () => {
+    const created = await db.prisma.level.create({
+      data: { title: "Plain", storyText: "No tests.", codingChallenge: "Explain.", order: 101 },
+    });
+    const level = await domain.getLevel(created.id);
+    expect(level?.starterCode).toBeNull();
+    expect(level?.challengeTests).toBeNull();
+  });
 });

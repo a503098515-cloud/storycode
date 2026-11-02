@@ -22,7 +22,8 @@ submit code. The catalog is read-only content shared by every user.
 
 - Both endpoints require a session. Signed out returns 401 `UNAUTHENTICATED`.
 - No endpoint accepts `userId`. Levels are not user-scoped.
-- `GET /api/levels` returns `{ levels }`, ordered by `order` ascending, with full rows.
+- `GET /api/levels` returns `{ levels }`, ordered by `order` ascending, with full rows
+  (including `starterCode` and `challengeTests`, which are `null` for levels without tests).
 - `GET /api/levels/:levelId` returns `{ level }`.
 - A `levelId` that is empty after trimming returns 400 `VALIDATION`.
 - An unknown `levelId` returns 404 `NOT_FOUND`, never 403.
@@ -83,6 +84,7 @@ stateDiagram-v2
 
 ## Out of scope
 
-- Submissions: see [submissions.md](submissions.md).
+- Submissions: see [submissions.md](../submissions/submissions.md).
+- The code editor and running a level's tests: see [coding-challenge.md](coding-challenge.md).
 - Progress and the current level: see the specs in `progress/`.
 - Creating or editing levels: levels are seeded, and there is no write API.
