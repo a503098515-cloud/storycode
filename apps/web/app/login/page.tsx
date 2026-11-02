@@ -37,7 +37,7 @@ export default function LoginPage() {
   return (
     <main className="space-y-8">
       <header>
-        <h1 className="text-2xl font-bold">Sign in</h1>
+        <h1 className="text-2xl font-bold">Sign Up / Login</h1>
         <p className="text-sm text-neutral-500">
           Enter your username and password. Your account is created the first time you sign in.
         </p>
