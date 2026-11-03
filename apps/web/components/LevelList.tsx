@@ -9,6 +9,8 @@ type Level = {
   title: string;
   storyText: string;
   codingChallenge: string;
+  starterCode: string | null;
+  challengeTests: unknown; // validated by SubmissionForm
   order: number;
 };
 
@@ -149,7 +151,7 @@ export function LevelList() {
                 <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500">Your challenge</p>
                 <p className="mt-1 text-sm leading-6 text-neutral-700">{level.codingChallenge}</p>
               </div>
-              <SubmissionForm levelId={level.id} />
+              <SubmissionForm levelId={level.id} starterCode={level.starterCode} challengeTests={level.challengeTests} />
             </article>
           </li>
         ))}

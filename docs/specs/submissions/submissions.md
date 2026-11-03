@@ -16,6 +16,7 @@ Users need to submit their code solutions for coding levels and view their submi
 - `GET /api/submissions` returns all submissions created by the authenticated user.
 - `POST /api/submissions` creates a submission record for the authenticated user when valid `levelId` and `codeSubmitted` fields are provided.
 - `GET /api/submissions/[submissionId]` returns a single submission if it belongs to the authenticated user.
+- `isPassed` is stored as the client sends it. The web form sets it from the level's challenge tests run in the browser (see [coding-challenge.md](../levels/coding-challenge.md) and ADR-0012); the API does not verify it.
 - Requests without a valid session return `401 UNAUTHENTICATED`.
 - Requests with invalid JSON or missing schema fields return `400 BAD_JSON` or `400 VALIDATION_ERROR`.
 - Querying a submission owned by a different user returns `404 NOT_FOUND` to prevent resource existence disclosure (never `403`).
@@ -49,14 +50,5 @@ Users need to submit their code solutions for coding levels and view their submi
 
 ## UI states
 
-```mermaid
-stateDiagram-v2
-  [*] --> empty: Initial state
-  empty --> ready: User inputs code
-  ready --> empty: Clear code
-  ready --> submitting: Click submit button
-  submitting --> success: API 201 response
-  success --> empty: Reset form state
-  submitting --> error: 400 validation error or network failure
-  error --> submitting: Retry submit button
-  error --> ready: Edit code content
+The submission form (`SubmissionForm`) is specified with the code editor and
+test runner in [coding-challenge.md](../levels/coding-challenge.md#ui-states).
