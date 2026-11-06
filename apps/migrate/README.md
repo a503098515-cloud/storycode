@@ -9,7 +9,7 @@ db-server auto-applies migrations on boot.
 | Script | Command | Purpose |
 |---|---|---|
 | `src/index.ts` | `pnpm db:migrate` | Apply pending migrations over the wire |
-| `src/seed.ts` | `pnpm db:seed` | Seed the demo user and starter items |
+| `src/seed.ts` | `pnpm db:seed` | Seed starter levels |
 
 ## Dependencies
 
@@ -24,13 +24,12 @@ Developers and CI. No code imports from `@project/migrate`.
 
 ```bash
 pnpm db:migrate      # apply pending migrations
-pnpm db:seed         # seed demo data (safe to re-run — upserts)
+pnpm db:seed         # seed starter levels (safe to re-run — upserts)
 ```
 
 Requires the database server running (start it with `pnpm dev` or `pnpm db:dev`).
 
 ## The seed data
 
-The seed creates a single user (`demo-user`) with three starter items. It's safe
-to re-run — users upsert by ID, and items are only created if the user has none.
-Edit `src/seed.ts` to change the starting data.
+The seed creates two starter levels. Sign-in creates user accounts on first use,
+so no demo account is seeded. Edit `src/seed.ts` to change the starting data.

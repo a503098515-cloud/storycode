@@ -1,10 +1,13 @@
-# @project/auth — identity / auth
+# @project/auth — username/password authentication
 
-Identity without authentication.
+The web app authenticates users with normalized usernames and passwords.
+Passwords are stored as salted scrypt hashes. The first sign-in with an unused
+username creates an account; subsequent sign-ins verify the stored hash.
 
-Sign-in is an email — no password, no verification. `/login` finds or
-creates the `User` row and puts its id in an **unsigned, httpOnly cookie**.
-`currentUserId()` reads it back. That's the entire mechanism.
+Successful sign-in issues a random opaque session token. The database stores
+only the SHA-256 token hash, and `currentUserId()` resolves the user from a
+non-expired session. The cookie is HTTP-only, same-site, secure in production,
+and lasts 30 days.
 
 ## Public API
 
@@ -12,36 +15,24 @@ All exports come from `src/index.ts`:
 
 | Export | What it does |
 |---|---|
-| `currentUserId()` | The signed-in user's id, or `null`. Pages redirect to `/login` on null; API routes return 401. |
-| `startSession(userId)` | Sets the session cookie. Route Handlers / Server Actions only (Next.js cookie rule). |
-| `endSession()` | Clears the session cookie. |
-| `SESSION_COOKIE` | The cookie's name (`"session"`). |
+| `currentUserId()` | Returns the signed-in user's id, or `null`. |
+| `startSession(userId)` | Creates a database session and sets its cookie. Route Handlers / Server Actions only. |
+| `endSession()` | Revokes the current database session and clears its cookie. |
+| `hashPassword(password)` | Returns a salted scrypt password hash. |
+| `verifyPassword(password, hash)` | Checks a password against its stored hash. |
+| `SESSION_COOKIE` | The session cookie name (`"session"`). |
 
-## Why this is deliberately not secure
+Email-only legacy users do not have a password hash and cannot sign in through
+this flow. Password reset and account recovery are not implemented.
 
-Anyone can edit the cookie and become anyone. The example keeps that
-property on purpose, because it separates two ideas this app needs you to
-keep separate:
-
-- **Identity** — *who is this request for?* Every query in the app is scoped
-  by `currentUserId()`. That discipline is real and enforced today.
-- **Authentication** — *prove you are that user.* Absent today, by design.
-  When it arrives (OAuth, sessions with signatures, middleware), it replaces
-  the inside of this package — and because every page and route calls
-  `currentUserId()` and nothing else, the call sites don't change. The seam
-  is the function boundary.
-
-## Try the obvious attack
-
-Sign in, open devtools → Application → Cookies, change `session` to another
-user's id, refresh. You're them. Two things to notice afterwards: the login
-route refuses to run in production builds (`NODE_ENV === "production"`)
-unless `ALLOW_DEV_IDENTITY` is set — the same guard the old header stub had —
-and nothing in the app ever trusts a user id arriving in a request body or
-URL. Scoping by the session's user id is what keeps a forged id from being
-an *escalation*: you can claim to be someone, but every query still only
-shows you what that someone owns.
+Google and GitHub OAuth sign-in are also available in the web app. Configure
+`APP_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GITHUB_CLIENT_ID`, and
+`GITHUB_CLIENT_SECRET`. Provider accounts are matched by the provider's stable
+account ID; OAuth email addresses are not used to link existing accounts.
+Register callbacks at `${APP_URL}/api/auth/google/callback` and
+`${APP_URL}/api/auth/github/callback`.
 
 ## Consumers
 
-- `apps/web` — every page and API route
+- `apps/web` — pages and API routes derive user identity through
+  `currentUserId()`.

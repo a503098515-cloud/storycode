@@ -1,12 +1,7 @@
-// Seeds demo users and starter levels. Safe to re-run through unique keys.
+// Seeds starter levels. Safe to re-run through unique keys.
 // Run via: pnpm db:seed
 
 import { prisma } from "@project/db";
-
-const USERS = [
-  { email: "ada@example.com", name: "Ada" },
-  { email: "grace@example.com", name: "Grace" },
-];
 
 // challengeTests must match ChallengeTests (packages/domain) — see
 // docs/specs/levels/coding-challenge.md. Omitted = no tests for that level.
@@ -32,16 +27,6 @@ const LEVELS = [
 ];
 
 async function main() {
-  for (const user of USERS) {
-    const savedUser = await prisma.user.upsert({
-      where: { email: user.email },
-      update: {},
-      create: user,
-    });
-
-    console.log(`seed: ensured ${savedUser.email}`);
-  }
-
   for (const level of LEVELS) {
     await prisma.level.upsert({ where: { order: level.order }, update: level, create: level });
   }

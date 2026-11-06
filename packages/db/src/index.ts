@@ -3,4 +3,4 @@
 // The migration runner (applyMigrations) is available at @project/db/migrate.
 export { prisma, LOCAL_DEV_URL } from "./client";
 export { PrismaClient } from "./generated/prisma";
-export type { User, Level, Submission } from "./generated/prisma";
+export type { User, Level, Submission, OAuthAccount } from "./generated/prisma";

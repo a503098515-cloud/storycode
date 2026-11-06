@@ -32,6 +32,7 @@ export async function createSubmission(userId: string, input: CreateSubmissionIn
       create: {
         id: userId,
         email: `${userId}@example.com`,
+        username: userId,
         name: "Test User",
       },
     });

@@ -22,12 +22,14 @@ export default async function Home() {
 
   return (
     <main className="space-y-8">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-neutral-200 pb-5">
-        <Link href="/" className="text-xl font-bold tracking-tight text-neutral-900">
-          Story<span className="text-indigo-600">Code</span>
-        </Link>
-        <nav aria-label="Account" className="flex items-center gap-3">
-          <span className="hidden text-sm text-neutral-500 sm:inline">{user.email}</span>
+       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-neutral-200 pb-5">
+  <Link href="/" className="text-xl font-bold tracking-tight text-neutral-900">
+    Story<span className="text-indigo-600">Code</span>
+  </Link>
+  <nav aria-label="Account" className="flex items-center gap-3">
+    <span className="hidden text-sm text-neutral-500 sm:inline">
+      Signed in as {user.username ?? user.email ?? user.name}
+    </span>
           <Link
             href="/profile"
             className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
