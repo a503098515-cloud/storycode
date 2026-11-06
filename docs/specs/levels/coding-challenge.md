@@ -71,6 +71,15 @@ real code editor, and unit tests show which inputs give the expected output.
 - When `challengeTests` does not match the `ChallengeTests` shape, the form
   says the tests could not be loaded and does not offer Run tests. Submitting
   still works and posts `isPassed: false`.
+- After a test run, the form offers one optional local AI action. When tests
+  are still failing it is **Small nudge**, which asks Ollama Mistral for one
+  short conceptual question without code or step-by-step instructions. Once all challenge tests pass, it
+  becomes **Explain this**, which breaks down why the submitted code is
+  correct. The current challenge, code, and test results are sent only to the
+  configured Ollama endpoint; no AI response is stored with the submission.
+- If Ollama is not installed, running, or has the configured model, the
+  existing challenge and submission flow still work and the UI shows a brief
+  unavailable message.
 
 ## UI states
 
@@ -124,6 +133,10 @@ Level 1 asks for `greet(name)` that returns `"Hello, <name>!"`.
 - `pnpm test` also runs `apps/web/tests/test-results.test.tsx`, which finds
   the live region by role and checks it is the same element before and
   after a run.
+- Optional AI drill: install Ollama, run `ollama pull mistral` and
+  `ollama serve`, then open a challenge, run a failing solution and use
+  **Small nudge**, then run a passing solution and use **Explain this**.
+  Without Ollama, confirm the normal test and submit actions still work.
 
 ## Constraints & decisions
 
@@ -154,3 +167,22 @@ Level 1 asks for `greet(name)` that returns `"Hello, <name>!"`.
 - Capturing `console.log` output, languages other than JavaScript, and tests
   or starter code for levels after level 1.
 - Storing submissions: see [submissions.md](../submissions/submissions.md).
+- Cloud-hosted model providers, automatic code changes, and AI help before a
+  test run.
+
+## Optional Ollama setup
+
+The feature requires Ollama installed and running on the same machine as the
+web app, the `mistral` model downloaded, and enough local memory for that
+model. A practical minimum is 8 GB RAM and about 4 GB of free disk space;
+more memory improves responsiveness. No API key or cloud account is needed.
+
+```bash
+ollama pull mistral
+ollama serve
+```
+
+The web app defaults to `http://127.0.0.1:11434` and `mistral`. Set
+`OLLAMA_BASE_URL` or `OLLAMA_MODEL` in the environment when using a different
+local endpoint or model. The feature is optional: the rest of the challenge
+works normally when Ollama is unavailable.

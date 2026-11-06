@@ -10,23 +10,29 @@ import { TestResults } from "@/components/TestResults";
 import { runInWorker } from "@/lib/run-in-worker";
 
 type FormStatus = "idle" | "running" | "submitting" | "error";
+type AssistStatus = "idle" | "loading" | "error";
 
 const MAX_CODE_LENGTH = 10000;
 
 interface SubmissionFormProps {
   levelId: string;
+  challenge?: string;
   starterCode: string | null;
   /** Raw JSON from the API; validated here before anything runs. */
   challengeTests: unknown;
 }
 
-export function SubmissionForm({ levelId, starterCode, challengeTests }: SubmissionFormProps) {
+export function SubmissionForm({ levelId, challenge, starterCode, challengeTests }: SubmissionFormProps) {
   const [codeSubmitted, setCodeSubmitted] = useState(starterCode ?? "");
   const [status, setStatus] = useState<FormStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [result, setResult] = useState<RunResult | null>(null);
   const [testsRunning, setTestsRunning] = useState(false);
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
+  const [assistStatus, setAssistStatus] = useState<AssistStatus>("idle");
+  const [assistMode, setAssistMode] = useState<"hint" | "explain" | null>(null);
+  const [assistAnswer, setAssistAnswer] = useState<string | null>(null);
+  const [assistError, setAssistError] = useState<string | null>(null);
 
   // null = this level has no tests; "invalid" = the stored tests are malformed.
   const tests = useMemo<ChallengeTestsInput | "invalid" | null>(() => {
@@ -48,7 +54,48 @@ export function SubmissionForm({ levelId, starterCode, challengeTests }: Submiss
     setCodeSubmitted(next);
     setResult(null);
     setSavedMessage(null);
+    setAssistAnswer(null);
+    setAssistError(null);
     if (status === "error") setStatus("idle");
+  }
+
+  async function handleAssist(mode: "hint" | "explain") {
+    if (!result || assistStatus === "loading") return;
+    setAssistStatus("loading");
+    setAssistMode(mode);
+    setAssistAnswer(null);
+    setAssistError(null);
+
+    const results = result.cases
+      .map((testCase, index) => {
+        const outcome = testCase.passed
+          ? "passed"
+          : testCase.error
+            ? `failed with ${testCase.error}`
+            : `failed: expected ${testCase.expected}, got ${testCase.actual}`;
+        return `Test ${index + 1}: ${outcome}`;
+      })
+      .join("\n");
+
+    try {
+      const response = await fetch("/api/ollama/assist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode,
+          challenge: challenge ?? "Explain this coding challenge.",
+          code: codeSubmitted,
+          results,
+        }),
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(data?.error?.message ?? "AI help is unavailable right now.");
+      setAssistAnswer(data.answer);
+      setAssistStatus("idle");
+    } catch (err) {
+      setAssistStatus("error");
+      setAssistError(err instanceof Error ? err.message : "AI help is unavailable right now.");
+    }
   }
 
   async function handleRun() {
@@ -176,7 +223,38 @@ export function SubmissionForm({ levelId, starterCode, challengeTests }: Submiss
         {status === "error" ? errorMessage : savedMessage}
       </p>
 
-      {runnable && <TestResults running={testsRunning} result={result} functionName={runnable.functionName} />}
+      {runnable && (
+        <>
+          <TestResults running={testsRunning} result={result} functionName={runnable.functionName} />
+          {result && (
+            <section className="border-t border-neutral-200 pt-3" aria-labelledby={`ai-help-${levelId}`}>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <h3 id={`ai-help-${levelId}`} className="text-xs font-semibold text-neutral-700">
+                    Optional AI help
+                  </h3>
+                  <p className="text-[11px] text-neutral-500">Uses your local Ollama Mistral model.</p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleAssist(result.passed ? "explain" : "hint")}
+                    disabled={assistStatus === "loading"}
+                    className="rounded border border-neutral-300 bg-white px-2.5 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {assistStatus === "loading" ? "Thinking…" : result.passed ? "Explain this" : "Small nudge"}
+                  </button>
+                </div>
+              </div>
+              {(assistAnswer || assistError) && (
+                <p role="status" className="mt-2 whitespace-pre-wrap text-sm leading-6 text-neutral-700">
+                  {assistAnswer ?? assistError}
+                </p>
+              )}
+            </section>
+          )}
+        </>
+      )}
     </form>
   );
 }
