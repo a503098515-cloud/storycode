@@ -3,5 +3,5 @@
 import { z } from "zod";
 
 export const LevelIdParam = z.object({
-  levelId: z.string().trim().min(1, "Level id is reuired"),
+  levelId: z.string().trim().min(1, "Level id is required"),
 });

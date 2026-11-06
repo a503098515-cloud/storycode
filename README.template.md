@@ -9,7 +9,7 @@ always lives on in the template repo — you lose nothing by replacing it.
 Everything not in <angle brackets> is already true of this codebase; keep it.
 -->
 
-# <Project name>
+# Story Code
 
 <One sentence: what this app does and for whom. Not the tech — the point.>
 

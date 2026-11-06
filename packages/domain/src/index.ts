@@ -16,3 +16,4 @@ export {
 export { LevelIdParam } from "./schemas/level";
 export * from "./schemas/submission";
 export * from "./queries/submission"
+export { ChallengeTests, type ChallengeTestsInput } from "./schemas/challenge";

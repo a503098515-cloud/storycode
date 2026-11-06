@@ -35,11 +35,27 @@ describe("POST /api/progress", () => {
       })
     );
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(201);
     expect(await response.json()).toEqual({ progress: { currentLevelId: level.id } });
     expect((await db.prisma.user.findUnique({ where: { id: user.id } }))?.currentLevelId).toBe(
       level.id
     );
+  });
+
+  it("reads the signed-in user's saved progress", async () => {
+    const user = await db.prisma.user.create({
+      data: { name: "Progress Read User", email: "progress-read@example.com" },
+    });
+    const level = await db.prisma.level.create({
+      data: { title: "Read", storyText: "Continue.", codingChallenge: "Print 2", order: 2 },
+    });
+    currentUserId = user.id;
+    await db.prisma.user.update({ where: { id: user.id }, data: { currentLevelId: level.id } });
+
+    const response = await postProgress(new Request("http://localhost/api/progress", { method: "GET" }));
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ progress: { currentLevelId: level.id } });
   });
 
   it("rejects an unknown level without changing progress", async () => {

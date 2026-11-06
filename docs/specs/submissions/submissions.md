@@ -16,8 +16,10 @@ Users need to submit their code solutions for coding levels and view their submi
 - `GET /api/submissions` returns all submissions created by the authenticated user.
 - `POST /api/submissions` creates a submission record for the authenticated user when valid `levelId` and `codeSubmitted` fields are provided.
 - `GET /api/submissions/[submissionId]` returns a single submission if it belongs to the authenticated user.
+- `isPassed` is stored as the client sends it. The web form sets it from the level's challenge tests run in the browser (see [coding-challenge.md](../levels/coding-challenge.md) and ADR-0012); the API does not verify it.
 - Requests without a valid session return `401 UNAUTHENTICATED`.
 - Requests with invalid JSON or missing schema fields return `400 BAD_JSON` or `400 VALIDATION_ERROR`.
+- Database operation failures are logged on the server and return `500 INTERNAL` with a generic message; internal error details are not sent to clients.
 - Querying a submission owned by a different user returns `404 NOT_FOUND` to prevent resource existence disclosure (never `403`).
 
 ## Examples
@@ -26,9 +28,10 @@ Users need to submit their code solutions for coding levels and view their submi
 |---|---|
 | Signed-out request (`GET /api/submissions`) | Returns `401 UNAUTHENTICATED` |
 | Signed-in (`GET /api/submissions`) | Returns `200 OK` with user's submissions list |
-| Signed-in (`POST /api/submissions` with valid payload) | Creates submission and returns `200 OK` |
+| Signed-in (`POST /api/submissions` with valid payload) | Creates submission and returns `201 Created` |
 | Signed-in (`POST /api/submissions` with `{}`) | Returns `400 VALIDATION_ERROR` |
 | Signed-in (`POST /api/submissions` with invalid JSON) | Returns `400 BAD_JSON` |
+| Signed-in request when a database operation fails | Logs the failure and returns `500 INTERNAL` without raw error details |
 | Signed-in (`GET /api/submissions/[submissionId]` owned by another user) | Returns `404 NOT_FOUND` |
 
 ## Verify
@@ -46,3 +49,8 @@ Users need to submit their code solutions for coding levels and view their submi
 ## Out of scope
 - Code execution and evaluation logic (handled by isolated submission runners outside this API).
 - Pagination and query-string filtering on submission lists.
+
+## UI states
+
+The submission form (`SubmissionForm`) is specified with the code editor and
+test runner in [coding-challenge.md](../levels/coding-challenge.md#ui-states).

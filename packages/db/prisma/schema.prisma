@@ -56,6 +56,9 @@ model Level {
   title           String
   storyText       String
   codingChallenge String
+  // Shape validated by ChallengeTests (packages/domain); null = no tests.
+  starterCode     String?
+  challengeTests  Json?
   order           Int          @unique
   submissions     Submission[]
   createdAt       DateTime     @default(now())

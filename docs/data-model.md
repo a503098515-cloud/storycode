@@ -18,6 +18,8 @@ Represents a coding challenge step in the story mode.
 - `title`: Level title
 - `storyText`: Story content/dialogue
 - `codingChallenge`: Prompt/code requirement
+- `starterCode`: Code the editor starts with (nullable)
+- `challengeTests`: JSONB unit tests, `{ functionName, cases: [{ args, expected }] }` (nullable — see `docs/specs/levels/coding-challenge.md`)
 - `order`: Sequential order of the level
 
 ### 3. Submission
@@ -31,3 +33,4 @@ Tracks player submissions for each level.
 ## Verification
 - Validated Prisma Schema via `pnpm exec prisma validate`.
 - Generated initial SQL DDL migration script at `packages/db/prisma/migrations/0001_init.sql`.
+- `0002_level_challenge.sql` adds `Level.starterCode` and `Level.challengeTests`.
