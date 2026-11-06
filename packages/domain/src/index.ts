@@ -11,6 +11,7 @@ export {
   getUserByUsername,
   createCredentialUser,
   findOrCreateUser,
+  findOrCreateOAuthUser,
 } from "./queries/users";
 export { LevelIdParam } from "./schemas/level";
 export * from "./schemas/submission";

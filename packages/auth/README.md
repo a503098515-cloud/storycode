@@ -25,6 +25,13 @@ All exports come from `src/index.ts`:
 Email-only legacy users do not have a password hash and cannot sign in through
 this flow. Password reset and account recovery are not implemented.
 
+Google and GitHub OAuth sign-in are also available in the web app. Configure
+`APP_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GITHUB_CLIENT_ID`, and
+`GITHUB_CLIENT_SECRET`. Provider accounts are matched by the provider's stable
+account ID; OAuth email addresses are not used to link existing accounts.
+Register callbacks at `${APP_URL}/api/auth/google/callback` and
+`${APP_URL}/api/auth/github/callback`.
+
 ## Consumers
 
 - `apps/web` — pages and API routes derive user identity through

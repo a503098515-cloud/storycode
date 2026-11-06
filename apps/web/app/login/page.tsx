@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -9,6 +9,12 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).has("oauthError")) {
+      setError("Sign-in with that provider failed. Please try again.");
+    }
+  }, []);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -83,6 +89,20 @@ export default function LoginPage() {
           {busy ? "Signing in…" : "Sign in"}
         </button>
       </form>
+      <div className="flex flex-col gap-3">
+        <a
+          href="/api/auth/google"
+          className="rounded-lg border border-neutral-300 px-4 py-2 text-center text-sm font-medium hover:bg-neutral-50"
+        >
+          Continue with Google
+        </a>
+        <a
+          href="/api/auth/github"
+          className="rounded-lg border border-neutral-300 px-4 py-2 text-center text-sm font-medium hover:bg-neutral-50"
+        >
+          Continue with GitHub
+        </a>
+      </div>
       {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
       <p className="rounded-lg border border-dashed border-amber-300 bg-amber-50 p-4 text-sm text-amber-800">
         New username? Your account will be created on your first sign-in.
