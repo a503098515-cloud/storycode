@@ -36,6 +36,9 @@ real code editor, and unit tests show which inputs give the expected output.
 - Every level's solution box is a CodeMirror editor with JavaScript
   highlighting. It starts with the level's `starterCode`, or empty when that
   is `null`. Tab moves focus out of the editor, so it is not a keyboard trap.
+- Each level card displays a three-stage progress preview with stage 1 marked
+  current and the later stages shown as locked. This is presentation only;
+  stage completion and unlocking are not tracked or persisted.
 - When a level has `challengeTests`, the form shows a **Run tests** button.
   Running the tests:
   1. evaluates the player's code in a fresh Web Worker, in strict mode;

@@ -1,12 +1,12 @@
 import { currentUserId } from "@project/auth";
 import { getSubmissionById } from "@project/domain";
+import { log } from "@project/log";
 
-export async function GET(//(Get ID
+export async function GET(
   _req: Request,
   { params }: { params: Promise<{ submissionId: string }> }
 ) {
   const userId = await currentUserId();
-  // not sigin 401
   if (!userId) {
     return Response.json(
       { error: { code: "UNAUTHENTICATED", message: "Unauthenticated" } },
@@ -14,14 +14,23 @@ export async function GET(//(Get ID
     );
   }
 
-  const { submissionId } = await params;// from URL parameters read submissionId 
-  const submission = await getSubmissionById(userId, submissionId);// Find item in database
-  if (!submission) {
+  const { submissionId } = await params;
+  try {
+    const submission = await getSubmissionById(userId, submissionId);
+    if (!submission) {
+      return Response.json(
+        { error: { code: "NOT_FOUND", message: "Submission not found" } },
+        { status: 404 }
+      );
+    }
+
+    return Response.json({ submission });
+  } catch (err) {
+    log.error({ err, userId, submissionId }, "Failed to get submission");
+    // Keep database details in the log, not in the response.
     return Response.json(
-      { error: { code: "NOT_FOUND", message: "Submission not found" } },
-      { status: 404 }
+      { error: { code: "INTERNAL", message: "Something went wrong" } },
+      { status: 500 }
     );
   }
-
-  return Response.json({ submission });
 }

@@ -146,6 +146,55 @@ export function LevelList() {
                   </h3>
                 </div>
               </header>
+              {/* This is only a preview. Stage progress is not saved yet. */}
+              <div className="rounded-lg border border-indigo-100 bg-indigo-50/50 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-semibold text-neutral-800">Stage progress</p>
+                    <p className="mt-0.5 text-xs text-neutral-500">Three steps in this level</p>
+                  </div>
+                  <p className="text-xs text-neutral-500">Preview only · progress isn&apos;t saved</p>
+                </div>
+                <ol
+                  aria-label="Three-stage progress preview"
+                  className="relative mt-5 grid grid-cols-3 before:absolute before:left-[16.666%] before:right-[16.666%] before:top-4 before:h-px before:bg-neutral-300"
+                >
+                  {[1, 2, 3].map((stage) => {
+                    const isCurrent = stage === 1;
+                    return (
+                      <li
+                        key={stage}
+                        aria-current={isCurrent ? "step" : undefined}
+                        aria-disabled={!isCurrent}
+                        className="z-10 flex flex-col items-center text-center"
+                      >
+                        <span
+                          className={`flex size-8 items-center justify-center rounded-full text-sm font-semibold ${
+                            isCurrent
+                              ? "bg-indigo-600 text-white ring-4 ring-indigo-100"
+                              : "border border-neutral-300 bg-white text-neutral-400"
+                          }`}
+                        >
+                          {isCurrent ? (
+                            stage
+                          ) : (
+                            <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" className="size-3.5">
+                              <rect x="3.25" y="7" width="9.5" height="6.25" rx="1.25" stroke="currentColor" strokeWidth="1.5" />
+                              <path d="M5.25 7V5a2.75 2.75 0 0 1 5.5 0v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                            </svg>
+                          )}
+                        </span>
+                        <span className={`mt-2 text-xs font-semibold ${isCurrent ? "text-indigo-700" : "text-neutral-500"}`}>
+                          Stage {stage}
+                        </span>
+                        <span className={`mt-0.5 text-[11px] ${isCurrent ? "text-indigo-600" : "text-neutral-400"}`}>
+                          {isCurrent ? "Current · 1/3" : "Locked"}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ol>
+              </div>
               <p className="leading-7 text-neutral-600">{level.storyText}</p>
               <div className="rounded-lg bg-neutral-50 p-4">
                 <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500">Your challenge</p>

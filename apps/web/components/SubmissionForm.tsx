@@ -144,11 +144,27 @@ export function SubmissionForm({ levelId, starterCode, challengeTests }: Submiss
         )}
         <button
           type="submit"
-          disabled={isEmpty || isTooLong}
-          aria-disabled={isBusy || undefined}
-          className="rounded bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-neutral-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
+          disabled={isSubmitDisabled}
+          aria-busy={status === "submitting"}
+          className="rounded bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Submit Solution
+          {/* Show a spinner while the submission is being sent. */}
+          {status === "submitting" ? (
+            <span className="inline-flex items-center gap-2">
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                className="size-4 animate-spin"
+                fill="none"
+              >
+                <circle cx="12" cy="12" r="9" stroke="currentColor" strokeOpacity="0.25" strokeWidth="3" />
+                <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+              </svg>
+              Submitting…
+            </span>
+          ) : (
+            "Submit Solution"
+          )}
         </button>
       </div>
 
