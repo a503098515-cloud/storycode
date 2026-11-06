@@ -23,7 +23,8 @@ real code editor, and unit tests show which inputs give the expected output.
 - `apps/web/lib/challenge.worker.ts` — the Web Worker that runs the grader
 - `apps/web/lib/run-in-worker.ts` — starts the worker and enforces the time limit
 - `apps/web/components/CodeEditor.tsx` — the CodeMirror editor
-- `apps/web/components/SubmissionForm.tsx` — editor, Run tests, results, submit
+- `apps/web/components/SubmissionForm.tsx` — editor, Run tests, submit
+- `apps/web/components/TestResults.tsx` — the live-region summary and per-case results
 - `apps/migrate/src/seed.ts` — level 1's story, starter code, and tests
 
 ## Behavior
@@ -54,6 +55,19 @@ real code editor, and unit tests show which inputs give the expected output.
 - **Submit solution** on a level with tests runs the tests first. It then
   posts the code with `isPassed: true` only when every case passed. On a
   level without tests, submit posts `isPassed: false`, as before.
+- Results are announced to screen readers through a `role="status"` live
+  region (`TestResults`) that is in the page from the first render and empty
+  until a run starts. It says "Running tests…" when a run starts, then
+  "N of M tests passed." Every run is announced, even when the result is the
+  same as the last one, because "Running tests…" comes between. Editing the
+  code clears the results without announcing anything.
+- The per-case results follow the buttons in reading order. Each case is a
+  list item that starts with "Passed:" or "Failed:" in text, not only a
+  ✓/✗ icon.
+- While tests run or a submission is in flight, Run tests and Submit are
+  `aria-disabled`, not `disabled`, so focus stays on the button that was
+  pressed. Submit outcomes and errors are announced through a second
+  always-present `role="status"` region.
 - When `challengeTests` does not match the `ChallengeTests` shape, the form
   says the tests could not be loaded and does not offer Run tests. Submitting
   still works and posts `isPassed: false`.
@@ -103,6 +117,13 @@ Level 1 asks for `greet(name)` that returns `"Hello, <name>!"`.
   passing solution and check that `GET /api/submissions` shows
   `isPassed: true`.
 - Keyboard drill: Tab into the editor, type, then Tab out to Run tests.
+  Press Enter: focus stays on Run tests while the tests run.
+- Screen-reader drill (VoiceOver or NVDA): Run tests announces "Running
+  tests…" then the summary; running again with the same code announces it
+  again; reading forward from the buttons reaches each case.
+- `pnpm test` also runs `apps/web/tests/test-results.test.tsx`, which finds
+  the live region by role and checks it is the same element before and
+  after a run.
 
 ## Constraints & decisions
 

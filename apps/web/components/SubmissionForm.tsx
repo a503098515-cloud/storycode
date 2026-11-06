@@ -6,6 +6,7 @@
 import { useMemo, useState } from "react";
 import { ChallengeTests, type ChallengeTestsInput, type RunResult } from "@project/domain/challenge";
 import { CodeEditor } from "@/components/CodeEditor";
+import { TestResults } from "@/components/TestResults";
 import { runInWorker } from "@/lib/run-in-worker";
 
 type FormStatus = "idle" | "running" | "submitting" | "error";
@@ -24,6 +25,7 @@ export function SubmissionForm({ levelId, starterCode, challengeTests }: Submiss
   const [status, setStatus] = useState<FormStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [result, setResult] = useState<RunResult | null>(null);
+  const [testsRunning, setTestsRunning] = useState(false);
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
 
   // null = this level has no tests; "invalid" = the stored tests are malformed.
@@ -37,6 +39,8 @@ export function SubmissionForm({ levelId, starterCode, challengeTests }: Submiss
   const isEmpty = codeSubmitted.trim() === "";
   const isTooLong = codeSubmitted.length > MAX_CODE_LENGTH;
   const isBusy = status === "running" || status === "submitting";
+  // Invalid code uses native `disabled`; busy uses aria-disabled so the
+  // pressed button keeps focus (a disabled button drops it to <body>).
   const isSubmitDisabled = isEmpty || isTooLong || isBusy;
   const labelId = `code-label-${levelId}`;
 
@@ -51,7 +55,9 @@ export function SubmissionForm({ levelId, starterCode, challengeTests }: Submiss
     if (!runnable || isEmpty || isBusy) return;
     setStatus("running");
     setSavedMessage(null);
+    setTestsRunning(true);
     setResult(await runInWorker(codeSubmitted, runnable));
+    setTestsRunning(false);
     setStatus("idle");
   }
 
@@ -65,17 +71,25 @@ export function SubmissionForm({ levelId, starterCode, challengeTests }: Submiss
 
     let isPassed = false;
     if (runnable) {
+      setTestsRunning(true);
       const run = await runInWorker(codeSubmitted, runnable);
       setResult(run);
+      setTestsRunning(false);
       isPassed = run.passed;
     }
 
     try {
-      const res = await fetch("/api/submissions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ levelId, codeSubmitted, isPassed }),
-      });
+      let res: Response;
+      try {
+        res = await fetch("/api/submissions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ levelId, codeSubmitted, isPassed }),
+        });
+      } catch {
+        // fetch rejects only when the network fails; its message is browser-specific.
+        throw new Error("Network request failed, please check your connection");
+      }
       const data = await res.json().catch(() => null);
       if (!res.ok) {
         throw new Error(data?.error?.message || "Failed to submit code, please try again");
@@ -104,7 +118,7 @@ export function SubmissionForm({ levelId, starterCode, challengeTests }: Submiss
         </p>
         <CodeEditor value={codeSubmitted} onChange={handleChange} disabled={isBusy} labelledBy={labelId} />
         {isTooLong && (
-          <p className="mt-1 text-xs text-red-500">
+          <p className="mt-1 text-xs text-red-700">
             Code length exceeds 10,000 characters limit ({codeSubmitted.length}/{MAX_CODE_LENGTH})
           </p>
         )}
@@ -116,25 +130,16 @@ export function SubmissionForm({ levelId, starterCode, challengeTests }: Submiss
         </p>
       )}
 
-      {result && runnable && <TestResults result={result} functionName={runnable.functionName} />}
-
-      {status === "error" && <p className="text-xs font-medium text-red-600">{errorMessage}</p>}
-
-      {savedMessage && (
-        <p role="status" className="text-xs font-medium text-green-700">
-          {savedMessage}
-        </p>
-      )}
-
       <div className="flex flex-wrap gap-2">
         {runnable && (
           <button
             type="button"
             onClick={handleRun}
-            disabled={isEmpty || isBusy}
-            className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-xs font-medium text-neutral-800 hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={isEmpty}
+            aria-disabled={isBusy || undefined}
+            className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-xs font-medium text-neutral-800 hover:bg-neutral-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
           >
-            {status === "running" ? "Running…" : "Run tests"}
+            Run tests
           </button>
         )}
         <button
@@ -162,43 +167,16 @@ export function SubmissionForm({ levelId, starterCode, challengeTests }: Submiss
           )}
         </button>
       </div>
-    </form>
-  );
-}
 
-function TestResults({ result, functionName }: { result: RunResult; functionName: string }) {
-  const passedCount = result.cases.filter((c) => c.passed).length;
-  return (
-    <section aria-label="Test results" className="rounded-lg border border-neutral-200 bg-white p-3">
+      {/* Always rendered so submit outcomes are announced (see TestResults). */}
       <p
         role="status"
-        className={`text-sm font-semibold ${result.passed ? "text-green-700" : "text-red-700"}`}
+        className={`min-h-4 text-xs font-medium ${status === "error" ? "text-red-700" : "text-green-700"}`}
       >
-        {passedCount} of {result.cases.length} tests passed
+        {status === "error" ? errorMessage : savedMessage}
       </p>
-      <ul className="mt-2 space-y-2">
-        {result.cases.map((c, i) => (
-          <li key={i} className="font-mono text-xs leading-5">
-            <span aria-hidden="true" className={c.passed ? "text-green-600" : "text-red-600"}>
-              {c.passed ? "✓" : "✗"}
-            </span>{" "}
-            <span className="sr-only">{c.passed ? "Passed: " : "Failed: "}</span>
-            <span className="text-neutral-800">
-              {functionName}({c.args})
-            </span>
-            {!c.passed && (
-              <div className="ml-4 text-neutral-600">
-                <div>expected: {c.expected}</div>
-                {c.error ? (
-                  <div className="text-red-700">error: {c.error}</div>
-                ) : (
-                  <div>got: {c.actual}</div>
-                )}
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
-    </section>
+
+      {runnable && <TestResults running={testsRunning} result={result} functionName={runnable.functionName} />}
+    </form>
   );
 }
