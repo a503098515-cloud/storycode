@@ -1,5 +1,13 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalEnv": [
+    "APP_URL",
+    "GOOGLE_CLIENT_ID",
+    "GOOGLE_CLIENT_SECRET",
+    "GITHUB_CLIENT_ID",
+    "GITHUB_CLIENT_SECRET",
+    "DATABASE_URL"
+  ],
   "tasks": {
     "dev": { "cache": false, "persistent": true },
     "build": { "dependsOn": ["^build"], "outputs": [".next/**", "dist/**"] },
@@ -7,14 +15,6 @@
     "test": { "dependsOn": ["^build"] },
     "clean": { "cache": false },
     "generate": { "cache": false, "outputs": ["src/generated/**"] },
-    "seed": { "cache": false },
-    "env": [
-        "APP_URL",
-        "GOOGLE_CLIENT_ID",
-        "GOOGLE_CLIENT_SECRET",
-        "GITHUB_CLIENT_ID",
-        "GITHUB_CLIENT_SECRET",
-        "DATABASE_URL"
-      ]
+    "seed": { "cache": false }
   }
 }
