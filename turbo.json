@@ -7,6 +7,14 @@
     "test": { "dependsOn": ["^build"] },
     "clean": { "cache": false },
     "generate": { "cache": false, "outputs": ["src/generated/**"] },
-    "seed": { "cache": false }
+    "seed": { "cache": false },
+    "env": [
+        "APP_URL",
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET",
+        "GITHUB_CLIENT_ID",
+        "GITHUB_CLIENT_SECRET",
+        "DATABASE_URL"
+      ]
   }
 }
