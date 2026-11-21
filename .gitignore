@@ -9,6 +9,7 @@ next-env.d.ts
 .pgdata/
 # Prisma generated client
 packages/db/src/generated/
+apps/web/src/generated/prisma/
 dist/
 .turbo
 .DS_Store

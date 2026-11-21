@@ -19,7 +19,8 @@ Shipping is a merge, not a ritual performed by someone who remembers the steps.
   bundle shared packages. Prisma uses its client engine with the PostgreSQL
   driver adapter, so deployment does not depend on a platform-specific query
   engine binary. The Turbo build task generates the database package's Prisma
-  Client before building dependent applications.
+  Client before building dependent applications, and the web build stages the
+  query compiler WASM at the path Prisma resolves in bundled server functions.
 
 ## Error states
 

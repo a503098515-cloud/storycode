@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/**": [
       "../../packages/db/src/generated/prisma/**/*",
+      "src/generated/prisma/query_compiler_bg.wasm",
     ],
   },
 };
