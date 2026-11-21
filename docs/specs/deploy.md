@@ -15,6 +15,8 @@ Shipping is a merge, not a ritual performed by someone who remembers the steps.
 - Secrets live in Container Apps settings; `.env.example` documents every
   variable; probes point at /api/health.
 - `PG_POOL_MAX=1` against the shared class Postgres — connection etiquette.
+- Next.js output tracing includes the monorepo root so Vercel deployments
+  bundle shared packages and the generated Prisma query engine.
 
 ## Error states
 
