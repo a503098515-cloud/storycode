@@ -18,7 +18,8 @@ Shipping is a merge, not a ritual performed by someone who remembers the steps.
 - Next.js output tracing includes the monorepo root so Vercel deployments
   bundle shared packages. Prisma uses its client engine with the PostgreSQL
   driver adapter, so deployment does not depend on a platform-specific query
-  engine binary.
+  engine binary. The Turbo build task generates the database package's Prisma
+  Client before building dependent applications.
 
 ## Error states
 
