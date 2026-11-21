@@ -16,7 +16,9 @@ Shipping is a merge, not a ritual performed by someone who remembers the steps.
   variable; probes point at /api/health.
 - `PG_POOL_MAX=1` against the shared class Postgres — connection etiquette.
 - Next.js output tracing includes the monorepo root so Vercel deployments
-  bundle shared packages and the generated Prisma query engine.
+  bundle shared packages. Prisma uses its client engine with the PostgreSQL
+  driver adapter, so deployment does not depend on a platform-specific query
+  engine binary.
 
 ## Error states
 
