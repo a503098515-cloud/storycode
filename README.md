@@ -13,7 +13,7 @@ Everything not in <angle brackets> is already true of this codebase; keep it.
 
 *Learn with a story to make coding fun.*
 
-**Live:** not deployed yet
+**Live:** https://storycode-eight.vercel.app
 
 <!-- Optional but recommended: one screenshot or GIF of the thing working.
      A README with a picture gets read; a wall of text gets skimmed. -->
@@ -66,4 +66,4 @@ Agent conventions (any harness): [`AGENTS.md`](AGENTS.md).
 
 ---
 
-<sub>Built on the CTP C12 full-stack starter — Next.js · Prisma · Postgres · Azure.</sub>
+<sub>Built on the CTP C12 full-stack starter — Next.js · Prisma · Postgres · Vercel.</sub>
